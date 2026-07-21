@@ -29,7 +29,7 @@ fn with_head(children) {
   [ElementNode("head", [], []), ..children]
 }
 
-pub fn ensure_consistent_root(root: soup.ElementTree) {
+fn ensure_root(root: soup.ElementTree) {
   case root {
     TextNode(_) ->
       ElementNode(
@@ -76,5 +76,5 @@ pub fn parse_(html: String) -> Result(soup.ElementTree, String) {
 }
 
 pub fn parse(html) {
-  parse_(html) |> result.map(ensure_consistent_root)
+  parse_(html) |> result.map(ensure_root)
 }

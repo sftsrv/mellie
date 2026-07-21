@@ -1,60 +1,30 @@
+import attr
 import birdie
-import gleam/list
+import html
 import mellie
-import presentable_soup
 
-const full_html = "<!doctype html>
-<head>
+pub fn html_basic_test() {
+  let content =
+    html.main([], [
+      html.h1([], [html.text("My heading")]),
+      html.p([attr.class("some-class")], [html.text("My body text")]),
+    ])
 
-</head>
-<body>
-<h2>Welcome!</h2>
-<p>This is some content in Markdown that can be rendered to your site</p>
-<p>Here&#39;s a code block and some other <em>fancy</em> formatting</p>
-<my-custom-tag data='hello world'>
-  <blockquote>
-    <h2>Nested Heading</h2>
-    <pre><code class='language-gleam'>code |&gt; print_me |&gt; echo
-      </code></pre>
-  </blockquote>
-</my-custom-tag>
-<script type='module' src='my/script/src'></script>
-<script>
-  console.log('some stuff')
-  console.log('other stuff')
-</script>
-<style>
-  .some-class {
-    background-color: green;
-  }
-</style>
-</body>
-</html>"
-
-pub fn parse_full_html_test() {
-  let assert Ok(result) =
-    full_html
-    |> mellie.parse
-
-  result
-  |> list.wrap
-  |> presentable_soup.elements_to_string
-  |> birdie.snap("html parsing and printing")
+  content
+  |> mellie.element_to_string
+  |> birdie.snap("some html content")
 }
 
-const partial_html = "
-<h2>Welcome!</h2>
-<p>This is some content in Markdown that can be rendered to your site</p>
-<p>Here&#39;s a code block and some other <em>fancy</em> formatting</p>
-"
+pub fn html_custom_test() {
+  let content =
+    html.main([], [
+      mellie.element("my-custom-element", [], [
+        html.p([], [html.text("My body text")]),
+      ]),
+      html.br([]),
+    ])
 
-pub fn parse_partial_html_test() {
-  let assert Ok(result) =
-    partial_html
-    |> mellie.parse
-
-  result
-  |> list.wrap
-  |> presentable_soup.elements_to_string
-  |> birdie.snap("partial html parsing and printing")
+  content
+  |> mellie.element_to_string
+  |> birdie.snap("some custom content")
 }

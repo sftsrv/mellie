@@ -19,7 +19,9 @@ gleam test --target erlang
 ```
 
 
-## birdie
+## snap
+
+> Review latest snapshots
 
 ```sh
 gleam run -m birdie

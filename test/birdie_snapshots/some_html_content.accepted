@@ -1,0 +1,10 @@
+---
+version: 2.0.2
+title: some html content
+file: ./test/mellie/html_test.gleam
+test_name: html_basic_test
+---
+<main>
+  <h1>My heading</h1>
+  <p class="some-class">My body text</p>
+</main>

@@ -1,7 +1,7 @@
 ---
 version: 2.0.2
 title: partial html parsing and printing
-file: ./test/mellie/html_test.gleam
+file: ./test/mellie/parse_test.gleam
 test_name: parse_partial_html_test
 ---
 <html>

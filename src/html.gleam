@@ -5,6 +5,10 @@
 
 import mellie
 
+pub fn text(text) {
+  mellie.text(text)
+}
+
 /// The top-level element in MathML. Every valid MathML instance must be wrapped in it. In addition, you must not nest a second <math> element in another, but you can have an arbitrary number of other child elements in it.
 pub fn math(attrs, children) {
   mellie.element("math", attrs, children)
@@ -138,6 +142,11 @@ pub fn pre(attrs, children) {
 /// Represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.
 pub fn h2(attrs, children) {
   mellie.element("h2", attrs, children)
+}
+
+/// Represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.
+pub fn h1(attrs, children) {
+  mellie.element("h1", attrs, children)
 }
 
 /// Represents a range of text that has been deleted from a document. This can be used when rendering "track changes" or source code diff information, for example. The <ins> element can be used for the opposite purpose: to indicate text that has been added to the document.
@@ -408,11 +417,6 @@ pub fn style(attrs, children) {
 /// Encapsulates a set of table rows ( <tr> elements), indicating that they comprise the foot of a table with information about the table's columns. This is usually a summary of the columns, e.g., a sum of the given numbers in a column.
 pub fn tfoot(attrs, children) {
   mellie.element("tfoot", attrs, children)
-}
-
-/// Represent six levels of section headings. <h1> is the highest section level and <h6> is the lowest.
-pub fn h1(attrs, children) {
-  mellie.element("h1", attrs, children)
 }
 
 /// Represents side-comments and small print, like copyright and legal text, independent of its styled presentation. By default, it renders text within it one font size smaller, such as from small to x-small .

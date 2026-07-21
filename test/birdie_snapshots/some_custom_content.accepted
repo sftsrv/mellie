@@ -1,0 +1,12 @@
+---
+version: 2.0.2
+title: some custom content
+file: ./test/mellie/html_test.gleam
+test_name: html_custom_test
+---
+<main>
+  <my-custom-element>
+    <p>My body text</p>
+  </my-custom-element>
+  <br>
+</main>

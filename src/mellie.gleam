@@ -1,3 +1,4 @@
+import gleam/list
 import internal/html
 import presentable_soup as soup
 
@@ -6,8 +7,12 @@ pub fn parse(html str: String) {
   |> html.parse
 }
 
-pub fn to_string(el) {
+pub fn elements_to_string(el) {
   soup.elements_to_string(el)
+}
+
+pub fn element_to_string(el) {
+  el |> list.wrap |> soup.elements_to_string
 }
 
 pub fn element(tag, attributes, children) {
