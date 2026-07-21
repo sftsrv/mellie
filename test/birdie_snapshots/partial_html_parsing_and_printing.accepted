@@ -1,0 +1,16 @@
+---
+version: 2.0.2
+title: partial html parsing and printing
+file: ./test/mellie/html_test.gleam
+test_name: parse_partial_html_test
+---
+<html>
+  <head></head>
+  <body>
+    <h2>Welcome!</h2>
+    <p>This is some content in Markdown that can be rendered to your site</p>
+    <p>Here&#39;s a code block and some other
+      <em>fancy</em>
+      formatting</p>
+  </body>
+</html>

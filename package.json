@@ -1,0 +1,15 @@
+{
+  "name": "mellie",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "packageManager": "pnpm@10.4.1",
+  "dependencies": {
+    "htmlparser2": "^12.0.0"
+  },
+  "devDependencies": {
+    "domhandler": "^6.0.1"
+  }
+}
