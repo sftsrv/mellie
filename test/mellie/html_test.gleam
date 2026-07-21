@@ -1,7 +1,7 @@
-import attr
 import birdie
-import html
 import mellie
+import mellie/attr
+import mellie/html
 
 pub fn html_basic_test() {
   let content =

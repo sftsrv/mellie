@@ -8,7 +8,7 @@ import gleam/string
 import presentable_soup as soup
 import simplifile
 
-const elements_out_file = "../src/html.gleam"
+const elements_out_file = "../src/mellie/html.gleam"
 
 const elements_header = "// This file is generated. Do not edit by hand
 
@@ -22,7 +22,7 @@ pub fn text(text) {
 }
 "
 
-const attribute_out_file = "../src/attr.gleam"
+const attribute_out_file = "../src/mellie/attr.gleam"
 
 const attributes_header = "// This file is generated. Do not edit by hand
 

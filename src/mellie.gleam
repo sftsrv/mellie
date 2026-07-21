@@ -1,5 +1,5 @@
 import gleam/list
-import internal/html
+import mellie/internal/html
 import presentable_soup as soup
 
 pub fn parse(html str: String) {

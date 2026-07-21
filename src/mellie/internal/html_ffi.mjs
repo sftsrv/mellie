@@ -7,11 +7,11 @@ import { element, text }
 
 import { Result$Ok, Result$Error }
   // @ts-expect-error relative this file's location in build/dev/javascript/web
-  from "../../prelude.mjs";
+  from "../../../prelude.mjs";
 
 import { to_list as array_to_list }
   // @ts-expect-error relative this file's location in build/dev/javascript/web
-  from '../../gleam_javascript/gleam/javascript/array.mjs';
+  from '../../../gleam_javascript/gleam/javascript/array.mjs';
 
 /**
  * @param {string} html
