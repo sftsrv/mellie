@@ -34,18 +34,23 @@ export function parse(html) {
       if (node.type === ElementType.Tag || node.type === ElementType.Script || node.type === ElementType.Style) {
         const attrs = node.attributes.map(a => [a.name, a.value])
         const children = node.children.map(convertNode).filter(Boolean)
+
         return element(node.name, array_to_list(attrs), array_to_list(children))
       }
 
-      if (node.type === ElementType.Root){
+      if (node.type === ElementType.Root) {
+        // if the root contains anything other than the HTML node, then we move that to the top
+        const html = node.children.find(c => c.type === ElementType.Tag && c.name === "html")
+        if (html) {
+          return convertNode(html)
+        }
+
         const children = node.children.map(convertNode).filter(Boolean)
         return element("html", array_to_list([]), array_to_list(children))
       }
 
-
       return undefined
     }
-
 
     const result = convertNode(doc)
     return Result$Ok(result)

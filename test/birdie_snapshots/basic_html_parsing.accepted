@@ -1,0 +1,15 @@
+---
+version: 2.0.2
+title: basic html parsing
+file: ./test/mellie/parse_test.gleam
+test_name: basic_parse_test
+---
+<!doctype html>
+<html>
+  <head>
+    <title>Page Title</title>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+</html>

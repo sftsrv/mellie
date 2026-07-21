@@ -5,6 +5,10 @@
 
 import mellie
 
+pub fn aria(name, value) {
+  mellie.attribute("aria-" <> name, value)
+}
+
 /// List of types the server accepts, typically a file type.
 pub fn accept(value) {
   mellie.attribute("accept", value)

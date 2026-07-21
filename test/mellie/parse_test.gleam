@@ -1,7 +1,5 @@
 import birdie
-import gleam/list
 import mellie
-import presentable_soup
 
 const full_html = "<!doctype html>
 <head>
@@ -37,8 +35,7 @@ pub fn parse_full_html_test() {
     |> mellie.parse
 
   result
-  |> list.wrap
-  |> presentable_soup.elements_to_string
+  |> mellie.element_to_string
   |> birdie.snap("html parsing and printing")
 }
 
@@ -54,7 +51,34 @@ pub fn parse_partial_html_test() {
     |> mellie.parse
 
   result
-  |> list.wrap
-  |> presentable_soup.elements_to_string
+  |> mellie.element_to_string
   |> birdie.snap("partial html parsing and printing")
+}
+
+pub fn html_to_document_string_test() {
+  let assert Ok(result) =
+    full_html
+    |> mellie.parse
+
+  result
+  |> mellie.to_document_string
+  |> birdie.snap("html to document string")
+}
+
+pub fn basic_parse_test() {
+  let input =
+    "
+  <html>
+    <head><title>Page Title</title></head>
+    <body>
+      <h1>Hello World</h1>
+    </body>
+  </html>
+"
+
+  let assert Ok(parsed) =
+    input
+    |> mellie.parse
+
+  parsed |> mellie.to_document_string |> birdie.snap("basic html parsing")
 }

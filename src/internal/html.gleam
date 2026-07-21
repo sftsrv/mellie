@@ -1,5 +1,6 @@
 import gleam/list
 import gleam/result
+import gleam/string
 import presentable_soup.{ElementNode, TextNode} as soup
 
 pub fn element(tag, attrs, children) {
@@ -18,7 +19,7 @@ fn is_tag(el: soup.ElementTree, tag) {
 }
 
 fn with_body(children) {
-  children |> list.append([element("body", [], [])])
+  children |> list.append([ElementNode("body", [], [])])
 }
 
 fn in_body(children) {
@@ -36,26 +37,29 @@ fn ensure_root(root: soup.ElementTree) {
         "html",
         [],
         [root]
-          |> with_head
-          |> with_body,
+          |> in_body
+          |> with_head,
       )
-    ElementNode(tag:, attributes: _, children:) ->
+    ElementNode(tag:, attributes: _, children:) -> {
+      let head = children |> list.find(is_tag(_, "head"))
+      let body = children |> list.find(is_tag(_, "body"))
+
       case tag {
         "body" -> ElementNode("html", [], [root] |> with_head)
         "head" -> ElementNode("html", [], [root] |> with_body)
         "html" -> {
-          let has_head = children |> list.any(is_tag(_, "head"))
-          let has_body = children |> list.any(is_tag(_, "body"))
-
-          case has_head, has_body {
-            True, True -> root
-            True, False -> ElementNode(..root, children: children |> with_body)
-            False, True -> ElementNode(..root, children: children |> with_head)
-            False, False ->
+          case head, body {
+            Ok(_), Ok(_) -> root
+            Ok(_), Error(_) ->
+              ElementNode(..root, children: children |> with_body)
+            Error(_), Ok(_) ->
+              ElementNode(..root, children: children |> with_head)
+            Error(_), Error(_) -> {
               ElementNode(
                 ..root,
                 children: root.children |> in_body |> with_head,
               )
+            }
           }
         }
         _ ->
@@ -64,6 +68,7 @@ fn ensure_root(root: soup.ElementTree) {
             ElementNode("body", [], [root]),
           ])
       }
+    }
   }
 }
 
@@ -76,5 +81,5 @@ pub fn parse_(html: String) -> Result(soup.ElementTree, String) {
 }
 
 pub fn parse(html) {
-  parse_(html) |> result.map(ensure_root)
+  html |> string.trim |> parse_ |> result.map(ensure_root)
 }

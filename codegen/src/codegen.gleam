@@ -16,6 +16,10 @@ const elements_header = "// This file is generated. Do not edit by hand
 //// This list automatically excludes any elements or attributes that are deprecated
 
 import mellie
+
+pub fn text(text) {
+  mellie.text(text)
+}
 "
 
 const attribute_out_file = "../src/attr.gleam"
@@ -26,6 +30,10 @@ const attributes_header = "// This file is generated. Do not edit by hand
 //// This list automatically excludes any elements or attributes that are deprecated
 
 import mellie
+
+pub fn aria(name, value){
+  mellie.attribute(\"aria-\" <> name, value)
+}
 "
 
 type Scraped {
