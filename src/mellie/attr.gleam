@@ -243,7 +243,7 @@ pub fn form(value) {
   mellie.attribute("form", value)
 }
 
-/// Indicates the action of the element, overriding the action defined in the <form> .
+/// Indicates the action of the element, overriding the action defined in the `form` .
 pub fn formaction(value) {
   mellie.attribute("formaction", value)
 }
@@ -268,12 +268,12 @@ pub fn formtarget(value) {
   mellie.attribute("formtarget", value)
 }
 
-/// IDs of the <th> elements which applies to this element.
+/// IDs of the `th` elements which applies to this element.
 pub fn headers(value) {
   mellie.attribute("headers", value)
 }
 
-/// Specifies the height of elements listed here. For all other elements, use the CSS height property. Note: In some instances, such as <div> , this is a legacy attribute, in which case the CSS height property should be used instead.
+/// Specifies the height of elements listed here. For all other elements, use the CSS height property. Note: In some instances, such as `div` , this is a legacy attribute, in which case the CSS height property should be used instead.
 pub fn height(value) {
   mellie.attribute("height", value)
 }
@@ -417,7 +417,7 @@ pub fn novalidate(value) {
   mellie.attribute("novalidate", value)
 }
 
-/// Indicates whether the contents are currently visible (in the case of a <details> element) or whether the dialog is active and can be interacted with (in the case of a <dialog> element).
+/// Indicates whether the contents are currently visible (in the case of a `details` element) or whether the dialog is active and can be interacted with (in the case of a `dialog` element).
 pub fn open(value) {
   mellie.attribute("open", value)
 }
@@ -580,7 +580,7 @@ pub fn tabindex(value) {
   mellie.attribute("tabindex", value)
 }
 
-/// Specifies where to open the linked document (in the case of an <a> element) or where to display the response received (in the case of a <form> element)
+/// Specifies where to open the linked document (in the case of an `a` element) or where to display the response received (in the case of a `form` element)
 pub fn target(value) {
   mellie.attribute("target", value)
 }
@@ -609,7 +609,7 @@ pub fn value(value) {
   mellie.attribute("value", value)
 }
 
-/// For the elements listed here, this establishes the element's width. Note: For all other instances, such as <div> , this is a legacy attribute, in which case the CSS width property should be used instead.
+/// For the elements listed here, this establishes the element's width. Note: For all other instances, such as `div` , this is a legacy attribute, in which case the CSS width property should be used instead.
 pub fn width(value) {
   mellie.attribute("width", value)
 }

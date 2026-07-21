@@ -40,9 +40,33 @@ type Scraped {
   Scraped(name: String, doc: String)
 }
 
-fn func(el: Scraped, args: fn(String) -> String, impl: fn(String) -> String) {
-  let assert Ok(re) = regexp.from_string("\\s+")
+pub fn replace_tags(string: String) -> String {
+  let assert Ok(pattern) = regexp.from_string("<\\w+>")
+  let matches = regexp.scan(pattern, string)
+  let replacements =
+    list.map(matches, fn(m) {
+      #(
+        m.content,
+        "`" <> m.content |> string.drop_start(1) |> string.drop_end(1) <> "`",
+      )
+    })
 
+  list.fold(replacements, string, fn(acc, replacement) {
+    let #(p, s) = replacement
+    string.replace(acc, p, s)
+  })
+}
+
+fn sanitize_docs(doc) {
+  let assert Ok(spaces) = regexp.from_string("\\s+")
+
+  doc
+  |> regexp.replace(spaces, _, " ")
+  |> replace_tags
+  |> string.trim
+}
+
+fn func(el: Scraped, args: fn(String) -> String, impl: fn(String) -> String) {
   let name =
     el.name
     |> string.remove_prefix("<")
@@ -61,7 +85,7 @@ fn func(el: Scraped, args: fn(String) -> String, impl: fn(String) -> String) {
   case string.contains(name, "*") {
     True -> ""
     False -> {
-      let doc = el.doc |> regexp.replace(re, _, " ") |> string.trim
+      let doc = sanitize_docs(el.doc)
       let doc = case doc {
         "" -> ""
         _ -> "/// " <> doc <> "\n"
