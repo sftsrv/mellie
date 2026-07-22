@@ -12,7 +12,7 @@ const elements_out_file = "../src/mellie/html.gleam"
 
 const elements_header = "// This file is generated. Do not edit by hand
 
-//// Element creation functions scraped from https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements
+//// List of elements scraped from [MDN's HTML Element Reference](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements)
 //// This list automatically excludes any elements or attributes that are deprecated
 
 import mellie
@@ -26,7 +26,7 @@ const attribute_out_file = "../src/mellie/attr.gleam"
 
 const attributes_header = "// This file is generated. Do not edit by hand
 
-//// Element creation functions scraped from https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes
+//// List of elements scraped from [MDN's HTML Attribute Reference](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes)
 //// This list automatically excludes any elements or attributes that are deprecated
 
 import mellie
