@@ -8,7 +8,7 @@ A library for working with HTML that supports JavaScript and Erlang Targets
 ## Installation
 
 ```sh
-gleam add mellie presentable_soup@2
+gleam add mellie
 ```
 
 If targeting JavaScript, you also need to install `htmlparser2` using the relevant package manager:

@@ -2,6 +2,9 @@ import gleam/list
 import mellie/internal/html
 import presentable_soup as soup
 
+pub type ElementTree =
+  soup.ElementTree
+
 pub fn parse(html str: String) {
   str
   |> html.parse
