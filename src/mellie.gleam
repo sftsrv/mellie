@@ -1,6 +1,8 @@
 import gleam/list
+import gleam/option.{None, Some}
+import gleam/string
 import mellie/internal/html
-import presentable_soup as soup
+import presentable_soup.{ElementNode, TextNode} as soup
 
 pub type ElementTree =
   soup.ElementTree
@@ -25,11 +27,20 @@ pub fn to_document_string(el) {
 }
 
 pub fn element(tag, attributes, children) {
-  soup.ElementNode(tag:, attributes:, children:)
+  ElementNode(tag:, attributes:, children:)
 }
 
 pub fn text(text) {
-  soup.TextNode(text)
+  TextNode(text)
+}
+
+/// Recursively get all text from given element
+pub fn inner_text(el: ElementTree) {
+  case el {
+    ElementNode(tag: _, attributes: _, children:) ->
+      children |> list.map(inner_text) |> string.join("")
+    TextNode(text) -> text
+  }
 }
 
 pub fn attribute(name, value) {
@@ -53,14 +64,31 @@ pub fn get_child_by_tag(
 
 fn has_tag(tree: ElementTree, tag: String) {
   case tree {
-    soup.ElementNode(tag: t, attributes: _, children: _) -> tag == t
+    ElementNode(tag: t, attributes: _, children: _) -> tag == t
     _ -> False
   }
 }
 
+/// Gets the children of an element. `TextNode`s will return `[]`
 pub fn children(tree: ElementTree) {
   case tree {
-    soup.ElementNode(tag: _, attributes: _, children:) -> children
+    ElementNode(tag: _, attributes: _, children:) -> children
+    _ -> []
+  }
+}
+
+/// Gets tag of the given element. `TextNode`s will return `None`
+pub fn tag(tree: ElementTree) {
+  case tree {
+    ElementNode(tag:, attributes: _, children: _) -> tag |> Some
+    TextNode(_) -> None
+  }
+}
+
+/// Gets attributes of the given element. `TextNode`s will return `[]`
+pub fn attrs(tree: ElementTree) {
+  case tree {
+    ElementNode(tag: _, attributes: _, children:) -> children
     _ -> []
   }
 }
@@ -70,8 +98,9 @@ pub fn get_children_by_tag(
   tree: ElementTree,
   tag: String,
 ) -> List(ElementTree) {
-  let children = tree |> children
-  list.map(children, fn(child) {
+  tree
+  |> children
+  |> list.map(fn(child) {
     case has_tag(child, tag) {
       True -> [child]
       False -> get_children_by_tag(child, tag)
@@ -80,20 +109,21 @@ pub fn get_children_by_tag(
   |> list.flatten
 }
 
-/// Runs the given function recursively over the result until it no longer results in items
-pub fn find_all(in: a, f: fn(a) -> List(a)) -> List(a) {
-  let out = f(in)
-  let next = out |> list.map(find_all(_, f)) |> list.flatten
+/// Runs the given function recursively over the result until it no longer results in items.
+/// Returns the found nodes from every level
+pub fn find_all(from in: a, with fun: fn(a) -> List(a)) -> List(a) {
+  let out = fun(in)
+  let next = out |> list.map(find_all(_, fun)) |> list.flatten
 
   list.append(out, next)
 }
 
-/// Runs the given function recursively over the result until it no longer returns items
+/// Runs the given function recursively over the result until it no longer returns items.
 /// Returns only the deepest matching nodes
-pub fn find_leaf(in: a, f: fn(a) -> List(a)) -> List(a) {
-  f(in)
+pub fn find_leaf(from in: a, with fun: fn(a) -> List(a)) -> List(a) {
+  fun(in)
   |> list.map(fn(o) {
-    case find_all(o, f) {
+    case find_all(o, fun) {
       [] -> [o]
       inner -> inner
     }
