@@ -34,6 +34,10 @@ import mellie
 pub fn aria(name, value){
   mellie.attribute(\"aria-\" <> name, value)
 }
+
+pub fn data(name, value){
+  mellie.attribute(\"data-\" <> name, value)
+}
 "
 
 type Scraped {
@@ -82,7 +86,7 @@ fn func(el: Scraped, args: fn(String) -> String, impl: fn(String) -> String) {
     |> string.replace(each: "-", with: "_")
 
   // ignore generic tags
-  case string.contains(name, "*") {
+  case list.contains(ignore_funcs(), name) {
     True -> ""
     False -> {
       let doc = sanitize_docs(el.doc)
@@ -122,6 +126,10 @@ fn void_tags() {
     "wbr",
   ]
   |> set.from_list
+}
+
+fn ignore_funcs() {
+  ["data", "data-*", "aria-*"]
 }
 
 fn scrape_els() {
