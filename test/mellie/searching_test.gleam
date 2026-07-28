@@ -11,7 +11,6 @@ const nested_html = "
       </inner>
     </ignored>
   </outer>
-
 "
 
 pub fn find_element_by_tag_test() {
@@ -51,4 +50,15 @@ pub fn find_elements_by_tag_leaf_test() {
   |> mellie.find_leaf(mellie.get_children_by_tag(_, "inner"))
   |> mellie.elements_to_string
   |> birdie.snap("find elements by tag leaf")
+}
+
+pub fn update_elements() {
+  let assert Ok(tree) = mellie.parse(nested_html)
+
+  tree
+  |> mellie.update_where(fn(e) { e |> mellie.inner_text == "C" }, fn(_) {
+    mellie.text("gotcha")
+  })
+  |> mellie.to_document_string
+  |> birdie.snap("update internal")
 }

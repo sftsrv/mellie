@@ -62,7 +62,7 @@ pub fn get_child_by_tag(
   }
 }
 
-fn has_tag(tree: ElementTree, tag: String) {
+pub fn has_tag(tree: ElementTree, tag: String) {
   case tree {
     ElementNode(tag: t, attributes: _, children: _) -> tag == t
     _ -> False
@@ -88,7 +88,7 @@ pub fn tag(tree: ElementTree) {
 /// Gets attributes of the given element. `TextNode`s will return `[]`
 pub fn attrs(tree: ElementTree) {
   case tree {
-    ElementNode(tag: _, attributes: _, children:) -> children
+    ElementNode(tag: _, attributes:, children: _) -> attributes
     _ -> []
   }
 }
@@ -129,4 +129,24 @@ pub fn find_leaf(from in: a, with fun: fn(a) -> List(a)) -> List(a) {
     }
   })
   |> list.flatten
+}
+
+pub fn update_where(
+  from in: ElementTree,
+  where should_visit: fn(ElementTree) -> Bool,
+  with update: fn(ElementTree) -> ElementTree,
+) {
+  case should_visit(in) {
+    False ->
+      case in {
+        TextNode(_) -> in
+        ElementNode(tag: _, attributes: _, children:) ->
+          ElementNode(
+            ..in,
+            children: children
+              |> list.map(update_where(_, should_visit, update)),
+          )
+      }
+    True -> update(in)
+  }
 }
