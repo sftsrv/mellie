@@ -150,3 +150,17 @@ pub fn update_where(
     True -> update(in)
   }
 }
+
+/// Sets attributes on an `ElementNode`, does not modify a `TextNode`
+pub fn set_attributes(el: ElementTree, attr) {
+  case el {
+    TextNode(_) -> el
+    ElementNode(tag: _, attributes:, children: _) ->
+      ElementNode(..el, attributes: attributes |> list.append(attr))
+  }
+}
+
+/// Sets attributes on an `ElementNode`, does not modify a `TextNode`
+pub fn set_attribute(el: ElementTree, attr) {
+  set_attributes(el, [attr])
+}
