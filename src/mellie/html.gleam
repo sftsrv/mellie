@@ -534,6 +534,11 @@ pub fn dialog(attrs, children) {
   mellie.element("dialog", attrs, children)
 }
 
+/// Links a given piece of content with a machine-readable translation. If the content is time- or date-related, the `time` element must be used.
+pub fn data(attrs, children) {
+  mellie.element("data", attrs, children)
+}
+
 /// Represents tabular data—that is, information presented in a two-dimensional table comprised of rows and columns of cells containing data.
 pub fn table(attrs, children) {
   mellie.element("table", attrs, children)

@@ -70,7 +70,12 @@ fn sanitize_docs(doc) {
   |> string.trim
 }
 
-fn func(el: Scraped, args: fn(String) -> String, impl: fn(String) -> String) {
+fn func(
+  el: Scraped,
+  ignore,
+  args: fn(String) -> String,
+  impl: fn(String) -> String,
+) {
   let name =
     el.name
     |> string.remove_prefix("<")
@@ -86,7 +91,7 @@ fn func(el: Scraped, args: fn(String) -> String, impl: fn(String) -> String) {
     |> string.replace(each: "-", with: "_")
 
   // ignore generic tags
-  case list.contains(ignore_funcs(), name) {
+  case list.contains(ignore, name) {
     True -> ""
     False -> {
       let doc = sanitize_docs(el.doc)
@@ -128,7 +133,7 @@ fn void_tags() {
   |> set.from_list
 }
 
-fn ignore_funcs() {
+fn ignore_attrs() {
   ["data", "data-*", "aria-*"]
 }
 
@@ -193,6 +198,7 @@ fn scrape_els() {
   |> list.map(
     func(
       _,
+      [],
       fn(name) {
         let is_void = void_tags() |> set.contains(name)
         case is_void {
@@ -253,7 +259,7 @@ fn scrape_attrs() {
   all
   |> result.values
   |> list.map(
-    func(_, fn(_) { "value" }, fn(name) {
+    func(_, ignore_attrs(), fn(_) { "value" }, fn(name) {
       "mellie.attribute(\"" <> name <> "\", value" <> ")"
     }),
   )
