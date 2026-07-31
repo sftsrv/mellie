@@ -165,8 +165,15 @@ pub fn update_where_tag(
 pub fn set_attributes(el: ElementTree, attr) {
   case el {
     TextNode(_) -> el
-    ElementNode(tag: _, attributes:, children: _) ->
-      ElementNode(..el, attributes: attributes |> list.append(attr))
+    ElementNode(tag: _, attributes:, children: _) -> {
+      let d = attributes |> dict.from_list
+
+      let attrs =
+        list.fold(attr, d, fn(acc, a) {
+          dict.insert(acc, a |> pair.first, a |> pair.second)
+        })
+      ElementNode(..el, attributes: attrs |> dict.to_list)
+    }
   }
 }
 
