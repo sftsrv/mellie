@@ -214,13 +214,13 @@ pub fn closing_tag(tag) {
   string_tree.from_string("</" <> tag <> ">")
 }
 
-pub fn self_closing_tag(tag, attrs) {
+pub fn void_tag(tag, attrs) {
   case attrs {
-    [] -> string_tree.from_strings(["<", tag, " />"])
+    [] -> string_tree.from_strings(["<", tag, " >"])
     _ ->
       attrs_to_string(attrs)
       |> string_tree.prepend("<" <> tag <> " ")
-      |> string_tree.append(" />")
+      |> string_tree.append(" >")
   }
 }
 
@@ -249,7 +249,7 @@ fn element_to_string_rec(
       |> string_tree.from_string
     ElementNode(tag:, attributes:, children:) ->
       case voids |> set.contains(tag) {
-        True -> self_closing_tag(tag, attributes)
+        True -> void_tag(tag, attributes)
         False ->
           [
             opening_tag(tag, attributes),
@@ -267,5 +267,4 @@ fn element_to_string_rec(
 
 pub fn element_to_string(node: soup.ElementTree) {
   element_to_string_rec(node, should_encode(node), void_tags())
-  |> string_tree.to_string
 }

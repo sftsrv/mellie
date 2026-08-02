@@ -3,6 +3,7 @@ import gleam/list
 import gleam/option.{None, Some}
 import gleam/pair
 import gleam/string
+import gleam/string_tree
 import mellie/internal/html
 import presentable_soup.{ElementNode, TextNode} as soup
 
@@ -15,16 +16,24 @@ pub fn parse(html str: String) {
 }
 
 pub fn elements_to_string(el) {
+  el
+  |> list.map(html.element_to_string)
+  |> string_tree.join("")
+  |> string_tree.to_string
+}
+
+/// This is useful for tests but is not context dependant and may be incorrect in cases where internal HTML depends on formatting (e.g. `pre > span`)
+pub fn elements_to_string_pretty(el) {
   soup.elements_to_string(el)
 }
 
 /// This is useful for tests but is not context dependant and may be incorrect in cases where internal HTML depends on formatting (e.g. `pre > span`)
-pub fn element_to_pretty_string(el) {
+pub fn element_to_string_pretty(el) {
   el |> list.wrap |> soup.elements_to_string
 }
 
 pub fn element_to_string(el) {
-  html.element_to_string(el)
+  html.element_to_string(el) |> string_tree.to_string
 }
 
 const doctype_html = "<!doctype html>"

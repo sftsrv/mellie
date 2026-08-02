@@ -1,4 +1,5 @@
 import birdie
+import gleam/string_tree
 import mellie
 import mellie/attr
 import mellie/html
@@ -11,7 +12,7 @@ pub fn html_basic_test() {
     ])
 
   content
-  |> mellie.element_to_string
+  |> mellie.element_to_string_pretty
   |> birdie.snap("some html content")
 }
 
@@ -25,6 +26,6 @@ pub fn html_custom_test() {
     ])
 
   content
-  |> mellie.element_to_string
+  |> mellie.element_to_string_pretty
   |> birdie.snap("some custom content")
 }
