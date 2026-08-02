@@ -1,3 +1,4 @@
+import gleam/dict
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
@@ -238,7 +239,7 @@ fn should_encode(node: soup.ElementTree) {
 fn element_to_string_rec(
   node: soup.ElementTree,
   encode_text: Bool,
-  voids: set.Set(String),
+  is_void: fn(String) -> Bool,
 ) {
   case node {
     TextNode(text) ->
@@ -248,14 +249,18 @@ fn element_to_string_rec(
       }
       |> string_tree.from_string
     ElementNode(tag:, attributes:, children:) ->
-      case voids |> set.contains(tag) {
+      case is_void(tag) {
         True -> void_tag(tag, attributes)
         False ->
           [
             opening_tag(tag, attributes),
             string_tree.join(
               children
-                |> list.map(element_to_string_rec(_, should_encode(node), voids)),
+                |> list.map(element_to_string_rec(
+                  _,
+                  should_encode(node),
+                  is_void,
+                )),
               "",
             ),
             closing_tag(tag),
@@ -266,5 +271,11 @@ fn element_to_string_rec(
 }
 
 pub fn element_to_string(node: soup.ElementTree) {
-  element_to_string_rec(node, should_encode(node), void_tags())
+  let voids = void_tags()
+  element_to_string_rec(node, should_encode(node), set.contains(voids, _))
+}
+
+/// All tags will be auto-closing
+pub fn element_to_xml_string(node: soup.ElementTree) {
+  element_to_string_rec(node, should_encode(node), fn(_) { False })
 }

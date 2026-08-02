@@ -36,6 +36,10 @@ pub fn element_to_string(el) {
   html.element_to_string(el) |> string_tree.to_string
 }
 
+pub fn element_to_xml_string(el) {
+  html.element_to_xml_string(el) |> string_tree.to_string
+}
+
 const doctype_html = "<!doctype html>"
 
 pub fn to_document_string(el) {
