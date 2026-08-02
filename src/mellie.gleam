@@ -18,8 +18,13 @@ pub fn elements_to_string(el) {
   soup.elements_to_string(el)
 }
 
-pub fn element_to_string(el) {
+/// This is useful for tests but is not context dependant and may be incorrect in cases where internal HTML depends on formatting (e.g. `pre > span`)
+pub fn element_to_pretty_string(el) {
   el |> list.wrap |> soup.elements_to_string
+}
+
+pub fn element_to_string(el) {
+  html.element_to_string(el)
 }
 
 const doctype_html = "<!doctype html>"

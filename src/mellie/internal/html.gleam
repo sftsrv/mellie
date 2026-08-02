@@ -1,7 +1,10 @@
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
+import gleam/set
 import gleam/string
+import gleam/string_tree
+import glentities
 import htmgrrrl
 import presentable_soup.{ElementNode, TextNode} as soup
 
@@ -160,4 +163,87 @@ pub fn parse_(html: String) -> Result(soup.ElementTree, String) {
 
 pub fn parse(html) {
   html |> string.trim |> parse_ |> result.map(ensure_root)
+}
+
+/// List of void elements: https://developer.mozilla.org/en-US/docs/Glossary/Void_element
+fn void_tags() {
+  [
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param ",
+    "source",
+    "track",
+    "wbr",
+  ]
+  |> set.from_list
+}
+
+pub fn attr_to_string(attr: #(String, String)) {
+  let #(k, v) = attr
+
+  let str =
+    k <> "=" <> "\"" <> glentities.encode(v, glentities.HTMLBody) <> "\""
+
+  str
+  |> string_tree.from_string
+}
+
+pub fn attrs_to_string(attrs) {
+  attrs |> list.map(attr_to_string) |> string_tree.join(" ")
+}
+
+pub fn opening_tag(tag, attrs) {
+  case attrs {
+    [] -> string_tree.from_strings(["<", tag, ">"])
+    _ ->
+      attrs_to_string(attrs)
+      |> string_tree.prepend("<" <> tag <> " ")
+      |> string_tree.append(" >")
+  }
+}
+
+pub fn closing_tag(tag) {
+  string_tree.from_string("</" <> tag <> ">")
+}
+
+pub fn self_closing_tag(tag, attrs) {
+  case attrs {
+    [] -> string_tree.from_strings(["<", tag, " />"])
+    _ ->
+      attrs_to_string(attrs)
+      |> string_tree.prepend("<" <> tag <> " ")
+      |> string_tree.append(" />")
+  }
+}
+
+fn element_to_string_rec(node: soup.ElementTree, voids: set.Set(String)) {
+  case node {
+    TextNode(text) -> string_tree.from_string(text)
+    ElementNode(tag:, attributes:, children:) ->
+      case voids |> set.contains(tag) {
+        True -> self_closing_tag(tag, attributes)
+        False ->
+          [
+            opening_tag(tag, attributes),
+            string_tree.join(
+              children |> list.map(element_to_string_rec(_, voids)),
+              "",
+            ),
+            closing_tag(tag),
+          ]
+          |> string_tree.join("")
+      }
+  }
+}
+
+pub fn element_to_string(node: soup.ElementTree) {
+  element_to_string_rec(node, void_tags()) |> string_tree.to_string
 }
