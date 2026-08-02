@@ -1,5 +1,7 @@
+import gleam/dict
 import gleam/list
 import gleam/option.{None, Some}
+import gleam/pair
 import gleam/string
 import mellie/internal/html
 import presentable_soup.{ElementNode, TextNode} as soup
@@ -149,4 +151,64 @@ pub fn update_where(
       }
     True -> update(in)
   }
+}
+
+pub fn update_where_tag(
+  from in: ElementTree,
+  tag tag: String,
+  with update: fn(ElementTree) -> ElementTree,
+) {
+  update_where(in, has_tag(_, tag), update)
+}
+
+/// Sets attributes on an `ElementNode`, does not modify a `TextNode`
+pub fn set_attributes(el: ElementTree, attr) {
+  case el {
+    TextNode(_) -> el
+    ElementNode(tag: _, attributes:, children: _) -> {
+      let d = attributes |> dict.from_list
+
+      let attrs =
+        list.fold(attr, d, fn(acc, a) {
+          dict.insert(acc, a |> pair.first, a |> pair.second)
+        })
+      ElementNode(..el, attributes: attrs |> dict.to_list)
+    }
+  }
+}
+
+/// Sets attributes on an `ElementNode`, does not modify a `TextNode`
+pub fn set_attribute(el: ElementTree, attr) {
+  set_attributes(el, [attr])
+}
+
+/// Removes attributes on an `ElementNode`, does not modify a `TextNode`
+pub fn remove_attributes(el: ElementTree, attrs: List(String)) -> ElementTree {
+  let keys = attrs |> list.map(pair.new(_, True)) |> dict.from_list
+  let has_key = dict.has_key(keys, _)
+
+  case el {
+    TextNode(_) -> el
+    ElementNode(tag: _, attributes:, children: _) ->
+      ElementNode(
+        ..el,
+        attributes: attributes
+          |> list.filter(fn(a) { a |> pair.first |> has_key }),
+      )
+  }
+}
+
+/// Removes attribute on an `ElementNode`, does not modify a `TextNode`
+pub fn remove_attribute(el: ElementTree, attr: String) -> ElementTree {
+  remove_attributes(el, [attr])
+}
+
+// Gets an attribute value from an element
+pub fn attr(el: ElementTree, key: String) -> Result(String, Nil) {
+  el |> attrs |> dict.from_list |> dict.get(key)
+}
+
+// Gets a data attribute's value given the data key name. Given `my-key`, will look for `data-my-key`
+pub fn data_attr(el: ElementTree, data_key: String) -> Result(String, Nil) {
+  el |> attrs |> dict.from_list |> dict.get("data-" <> data_key)
 }

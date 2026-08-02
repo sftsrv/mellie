@@ -9,6 +9,10 @@ pub fn aria(name, value) {
   mellie.attribute("aria-" <> name, value)
 }
 
+pub fn data(name, value) {
+  mellie.attribute("data-" <> name, value)
+}
+
 /// List of types the server accepts, typically a file type.
 pub fn accept(value) {
   mellie.attribute("accept", value)
@@ -162,11 +166,6 @@ pub fn crossorigin(value) {
 /// Specifies the Content Security Policy that an embedded document must agree to enforce upon itself.
 pub fn csp(value) {
   mellie.attribute("csp", value)
-}
-
-/// Specifies the URL of the resource.
-pub fn data(value) {
-  mellie.attribute("data", value)
 }
 
 /// Indicates the date and time associated with the element.
