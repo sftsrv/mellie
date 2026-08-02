@@ -40,6 +40,11 @@ pub fn element_to_xml_string(el) {
   html.element_to_xml_string(el) |> string_tree.to_string
 }
 
+pub fn element_to_xml_document_string(el) {
+  let content = el |> element_to_xml_string
+  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" <> content |> string.trim
+}
+
 const doctype_html = "<!doctype html>"
 
 pub fn to_document_string(el) {

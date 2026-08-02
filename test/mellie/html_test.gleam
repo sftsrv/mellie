@@ -1,5 +1,4 @@
 import birdie
-import gleam/string_tree
 import mellie
 import mellie/attr
 import mellie/html

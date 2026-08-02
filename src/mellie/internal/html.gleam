@@ -1,4 +1,3 @@
-import gleam/dict
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
