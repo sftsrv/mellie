@@ -6,4 +6,4 @@ test_name: parse_partial_html_test
 ---
 <html><head></head><body><h2>Welcome!</h2>
 <p>This is some content in Markdown that can be rendered to your site</p>
-<p>Here's a code block and some other <em>fancy</em> formatting</p></body></html>
+<p>Here&#39;s a code block and some other <em>fancy</em> formatting</p></body></html>

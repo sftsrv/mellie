@@ -224,9 +224,29 @@ pub fn self_closing_tag(tag, attrs) {
   }
 }
 
-fn element_to_string_rec(node: soup.ElementTree, voids: set.Set(String)) {
+fn should_encode(node: soup.ElementTree) {
   case node {
-    TextNode(text) -> string_tree.from_string(text)
+    TextNode(_) -> False
+    ElementNode(tag:, attributes: _, children: _) ->
+      case tag {
+        "script" | "style" -> False
+        _ -> True
+      }
+  }
+}
+
+fn element_to_string_rec(
+  node: soup.ElementTree,
+  encode_text: Bool,
+  voids: set.Set(String),
+) {
+  case node {
+    TextNode(text) ->
+      case encode_text {
+        False -> text
+        True -> glentities.encode(text, glentities.HTMLBody)
+      }
+      |> string_tree.from_string
     ElementNode(tag:, attributes:, children:) ->
       case voids |> set.contains(tag) {
         True -> self_closing_tag(tag, attributes)
@@ -234,7 +254,8 @@ fn element_to_string_rec(node: soup.ElementTree, voids: set.Set(String)) {
           [
             opening_tag(tag, attributes),
             string_tree.join(
-              children |> list.map(element_to_string_rec(_, voids)),
+              children
+                |> list.map(element_to_string_rec(_, should_encode(node), voids)),
               "",
             ),
             closing_tag(tag),
@@ -245,5 +266,6 @@ fn element_to_string_rec(node: soup.ElementTree, voids: set.Set(String)) {
 }
 
 pub fn element_to_string(node: soup.ElementTree) {
-  element_to_string_rec(node, void_tags()) |> string_tree.to_string
+  element_to_string_rec(node, should_encode(node), void_tags())
+  |> string_tree.to_string
 }
