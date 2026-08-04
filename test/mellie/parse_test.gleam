@@ -45,14 +45,14 @@ const partial_html = "
 <p>Here&#39;s a code block and some other <em>fancy</em> formatting</p>
 "
 
-pub fn parse_partial_html_test() {
+pub fn parse_partial_html_to_document_test() {
   let assert Ok(result) =
     partial_html
     |> mellie.parse
 
   result
   |> mellie.element_to_string
-  |> birdie.snap("partial html parsing and printing")
+  |> birdie.snap("partial html parsing to document")
 }
 
 pub fn html_to_document_string_test() {

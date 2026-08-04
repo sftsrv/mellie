@@ -3,41 +3,81 @@ import gleam/list
 import gleam/option.{None, Some}
 import gleam/pair
 import gleam/string
+import gleam/string_tree
+import mellie/element.{type ElementTree, ElementNode, TextNode}
 import mellie/internal/html
-import presentable_soup.{ElementNode, TextNode} as soup
+import presentable_soup as soup
 
-pub type ElementTree =
-  soup.ElementTree
-
-pub fn parse(html str: String) {
+pub fn parse(html str: String) -> Result(ElementTree, String) {
   str
   |> html.parse
 }
 
-pub fn elements_to_string(el) {
-  soup.elements_to_string(el)
+pub fn elements_to_string(el: List(ElementTree)) -> String {
+  el
+  |> list.map(html.element_to_string)
+  |> string_tree.join("")
+  |> string_tree.to_string
 }
 
-pub fn element_to_string(el) {
-  el |> list.wrap |> soup.elements_to_string
+/// Transforms a tree recursively using the given element and text conversion functions
+pub fn transform_tree(
+  tree: ElementTree,
+  elem: fn(String, List(#(String, String)), List(a)) -> a,
+  text: fn(String) -> a,
+) -> a {
+  case tree {
+    TextNode(text: t) -> text(t)
+    ElementNode(tag:, attributes:, children:) ->
+      elem(tag, attributes, children |> list.map(transform_tree(_, elem, text)))
+  }
 }
 
-const doctype_html = "<!doctype html>"
+/// This is useful for tests but is not context dependant and may be incorrect in cases where internal HTML depends on formatting (e.g. `pre > span`). Uses `presentable_soup` under the hood
+pub fn elements_to_string_pretty(el: List(ElementTree)) -> String {
+  el
+  |> list.map(transform_tree(_, soup.ElementNode, soup.TextNode))
+  |> soup.elements_to_string
+}
 
-pub fn to_document_string(el) {
+/// This is useful for tests but is not context dependant and may be incorrect in cases where internal HTML depends on formatting (e.g. `pre > span`). Uses `presentable_soup` under the hood
+pub fn element_to_string_pretty(el: ElementTree) -> String {
+  el |> list.wrap |> elements_to_string_pretty
+}
+
+pub fn element_to_string(el: ElementTree) -> String {
+  html.element_to_string(el) |> string_tree.to_string
+}
+
+pub fn element_to_xml_string(el: ElementTree) -> String {
+  html.element_to_xml_string(el) |> string_tree.to_string
+}
+
+pub fn element_to_xml_document_string(el: ElementTree) -> String {
+  let content = el |> element_to_xml_string
+  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" <> content |> string.trim
+}
+
+const doctype_html: String = "<!doctype html>"
+
+pub fn to_document_string(el: ElementTree) -> String {
   doctype_html <> "\n" <> element_to_string(el)
 }
 
-pub fn element(tag, attributes, children) {
+pub fn element(
+  tag: String,
+  attributes: List(#(String, String)),
+  children: List(ElementTree),
+) -> ElementTree {
   ElementNode(tag:, attributes:, children:)
 }
 
-pub fn text(text) {
+pub fn text(text: String) -> ElementTree {
   TextNode(text)
 }
 
 /// Recursively get all text from given element
-pub fn inner_text(el: ElementTree) {
+pub fn inner_text(el: ElementTree) -> String {
   case el {
     ElementNode(tag: _, attributes: _, children:) ->
       children |> list.map(inner_text) |> string.join("")
@@ -45,7 +85,7 @@ pub fn inner_text(el: ElementTree) {
   }
 }
 
-pub fn attribute(name, value) {
+pub fn attribute(name: a, value: b) -> #(a, b) {
   #(name, value)
 }
 
@@ -64,7 +104,7 @@ pub fn get_child_by_tag(
   }
 }
 
-pub fn has_tag(tree: ElementTree, tag: String) {
+pub fn has_tag(tree: ElementTree, tag: String) -> Bool {
   case tree {
     ElementNode(tag: t, attributes: _, children: _) -> tag == t
     _ -> False
@@ -72,7 +112,7 @@ pub fn has_tag(tree: ElementTree, tag: String) {
 }
 
 /// Gets the children of an element. `TextNode`s will return `[]`
-pub fn children(tree: ElementTree) {
+pub fn children(tree: ElementTree) -> List(ElementTree) {
   case tree {
     ElementNode(tag: _, attributes: _, children:) -> children
     _ -> []
@@ -80,7 +120,7 @@ pub fn children(tree: ElementTree) {
 }
 
 /// Gets tag of the given element. `TextNode`s will return `None`
-pub fn tag(tree: ElementTree) {
+pub fn tag(tree: ElementTree) -> option.Option(String) {
   case tree {
     ElementNode(tag:, attributes: _, children: _) -> tag |> Some
     TextNode(_) -> None
@@ -88,7 +128,7 @@ pub fn tag(tree: ElementTree) {
 }
 
 /// Gets attributes of the given element. `TextNode`s will return `[]`
-pub fn attrs(tree: ElementTree) {
+pub fn attrs(tree: ElementTree) -> List(#(String, String)) {
   case tree {
     ElementNode(tag: _, attributes:, children: _) -> attributes
     _ -> []
@@ -137,7 +177,7 @@ pub fn update_where(
   from in: ElementTree,
   where should_visit: fn(ElementTree) -> Bool,
   with update: fn(ElementTree) -> ElementTree,
-) {
+) -> ElementTree {
   case should_visit(in) {
     False ->
       case in {
@@ -157,12 +197,15 @@ pub fn update_where_tag(
   from in: ElementTree,
   tag tag: String,
   with update: fn(ElementTree) -> ElementTree,
-) {
+) -> ElementTree {
   update_where(in, has_tag(_, tag), update)
 }
 
 /// Sets attributes on an `ElementNode`, does not modify a `TextNode`
-pub fn set_attributes(el: ElementTree, attr) {
+pub fn set_attributes(
+  el: ElementTree,
+  attr: List(#(String, String)),
+) -> ElementTree {
   case el {
     TextNode(_) -> el
     ElementNode(tag: _, attributes:, children: _) -> {
@@ -178,7 +221,7 @@ pub fn set_attributes(el: ElementTree, attr) {
 }
 
 /// Sets attributes on an `ElementNode`, does not modify a `TextNode`
-pub fn set_attribute(el: ElementTree, attr) {
+pub fn set_attribute(el: ElementTree, attr: #(String, String)) -> ElementTree {
   set_attributes(el, [attr])
 }
 

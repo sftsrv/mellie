@@ -21,7 +21,7 @@ pub fn find_element_by_tag_test() {
     |> mellie.get_child_by_tag("inner")
 
   child
-  |> mellie.element_to_string
+  |> mellie.element_to_string_pretty
   |> birdie.snap("find element by tag")
 }
 
@@ -30,7 +30,7 @@ pub fn find_elements_by_tag_test() {
 
   tree
   |> mellie.get_children_by_tag("inner")
-  |> mellie.elements_to_string
+  |> mellie.elements_to_string_pretty
   |> birdie.snap("find elements by tag")
 }
 
@@ -39,7 +39,7 @@ pub fn find_elements_by_tag_recursively_test() {
 
   tree
   |> mellie.find_all(mellie.get_children_by_tag(_, "inner"))
-  |> mellie.elements_to_string
+  |> mellie.elements_to_string_pretty
   |> birdie.snap("find elements by tag recursively")
 }
 
@@ -48,7 +48,7 @@ pub fn find_elements_by_tag_leaf_test() {
 
   tree
   |> mellie.find_leaf(mellie.get_children_by_tag(_, "inner"))
-  |> mellie.elements_to_string
+  |> mellie.elements_to_string_pretty
   |> birdie.snap("find elements by tag leaf")
 }
 
