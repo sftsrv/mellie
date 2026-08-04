@@ -6,6 +6,7 @@ Tasks are runnable using [Mask](https://github.com/jacobdeichert/mask) or by cop
 
 ```sh
 gleam deps download
+pnpm i
 
 cd codegen
 gleam deps download
