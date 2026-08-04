@@ -6,7 +6,7 @@ import gleam/string
 import gleam/string_tree
 import glentities
 import htmgrrrl
-import presentable_soup.{ElementNode, TextNode} as soup
+import mellie/element.{type ElementTree, ElementNode, TextNode}
 
 pub fn element(tag, attrs, children) {
   ElementNode(tag, attrs, children)
@@ -16,7 +16,7 @@ pub fn text(text) {
   TextNode(text)
 }
 
-fn is_tag(el: soup.ElementTree, tag) {
+fn is_tag(el: ElementTree, tag) {
   case el {
     ElementNode(tag: t, attributes: _, children: _) -> t == tag
     TextNode(_) -> False
@@ -35,7 +35,7 @@ fn with_head(children) {
   [ElementNode("head", [], []), ..children]
 }
 
-fn ensure_root(root: soup.ElementTree) {
+fn ensure_root(root: ElementTree) {
   case root {
     TextNode(_) ->
       ElementNode(
@@ -89,7 +89,7 @@ type State {
   State(
     parent: Option(State),
     /// current children
-    children: List(soup.ElementTree),
+    children: List(ElementTree),
     /// current tag + attrs
     curr: Option(Curr),
   )
@@ -121,7 +121,7 @@ fn step_out(state: State) {
 }
 
 @external(javascript, "./html_ffi.mjs", "parse")
-pub fn parse_(html: String) -> Result(soup.ElementTree, String) {
+pub fn parse_(html: String) -> Result(ElementTree, String) {
   let state =
     htmgrrrl.sax(html, Some(State(None, [], None)), fn(state, _, ev) {
       case ev {
@@ -159,6 +159,10 @@ pub fn parse_(html: String) -> Result(soup.ElementTree, String) {
     }
     None -> Error("no root node found")
   }
+}
+
+pub fn parse_partial(html) {
+  html |> string.trim |> parse_
 }
 
 pub fn parse(html) {
@@ -224,7 +228,7 @@ pub fn void_tag(tag, attrs) {
   }
 }
 
-fn should_encode(node: soup.ElementTree) {
+fn should_encode(node: ElementTree) {
   case node {
     TextNode(_) -> False
     ElementNode(tag:, attributes: _, children: _) ->
@@ -236,7 +240,7 @@ fn should_encode(node: soup.ElementTree) {
 }
 
 fn element_to_string_rec(
-  node: soup.ElementTree,
+  node: ElementTree,
   encode_text: Bool,
   is_void: fn(String) -> Bool,
 ) {
@@ -269,12 +273,12 @@ fn element_to_string_rec(
   }
 }
 
-pub fn element_to_string(node: soup.ElementTree) {
+pub fn element_to_string(node: ElementTree) {
   let voids = void_tags()
   element_to_string_rec(node, should_encode(node), set.contains(voids, _))
 }
 
 /// All tags will be auto-closing
-pub fn element_to_xml_string(node: soup.ElementTree) {
+pub fn element_to_xml_string(node: ElementTree) {
   element_to_string_rec(node, should_encode(node), fn(_) { False })
 }
