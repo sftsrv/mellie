@@ -8,6 +8,10 @@ import mellie/element.{type ElementTree, ElementNode, TextNode}
 import mellie/internal/html
 import presentable_soup as soup
 
+/// Parses the given HTML into a full document (containing `html`, `head`, and `body` tags)
+///
+/// If the given HTML does not contain an `html` or `head`, they will be automatically added
+/// and the given content will be put into the `body`
 pub fn parse(html str: String) -> Result(ElementTree, String) {
   str
   |> html.parse
